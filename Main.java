@@ -287,7 +287,7 @@ public class Main extends ConsoleProgram {
                     }
                 } else if (bal == 14) {
                     println(Colors.story
-                            + "First question: \nYou’re in a race and you pass the person in second place. What place are you in now?");
+                            + "First question: \nYou're in a race and you pass the person in second place. What place are you in now?");
                     coins.put("rm " + stats[4], 15);
                 } else if (bal == 15) {
                     if (ans.equalsIgnoreCase("2nd Place") || ans.equalsIgnoreCase("2nd") || ans.equalsIgnoreCase("2")
@@ -327,6 +327,9 @@ public class Main extends ConsoleProgram {
                         println("Nice, great job! I'm very surprised.\n" + Colors.blue + "[+1 Single-Use Shield]\n[+20 Coins]");
                         stats[0] += 20;
                         inv.add("Single-Use Shield");
+                    } else {
+                        println("You failed. I'm sorry.");
+                       isDead(stats);
                     }
                     print(Colors.norm);
                 } else {

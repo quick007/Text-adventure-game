@@ -1,3 +1,7 @@
+/**
+ * List of colors you can use 
+ */
+
 public class Colors {
 	public static final String red = "\u001B[31m";
 	public static final String green = "\u001B[32m";

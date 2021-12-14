@@ -29,7 +29,7 @@ public class Main extends ConsoleProgram {
         dirs.put("rm 8", new Integer[]{6, 0, 0, 0});
         dirs.put("rm 9", new Integer[]{0, 0, 7, 10});
         dirs.put("rm 10", new Integer[]{0, 9, 6, 0});
-        // descriptions for rooms whenever you sue `turn <arg>`
+        // descriptions for rooms whenever you use `turn <arg>`
         HashMap<String, String[]> desc = new HashMap<>();
         desc.put("rm 0", new String[]{
                 "The walls are marked with what appears to be blood. They cry " + Colors.red + "Help!" + Colors.norm
@@ -78,12 +78,15 @@ public class Main extends ConsoleProgram {
                 "The sides of the treasure room have beautifully crafted robes encased in bulletproof glass.",
                 "There’s a door leading back into the forest whence you came.",
                 "A white, concrete slab stops you from continuing."});
+                //in theory its impossible to encounter those sides so I used placeholders
         desc.put("rm 10", new String[]{"amongus", "amongus", "A path leads up into a central meeting area.", ""});
         HashMap<String, Integer> coins = new HashMap<>();
+        //adds coins in the rooms
         coins.put("rm 0", 0);
         for (int i = 1; i < 10; i++) {
             coins.put("rm " + i, (rand.nextInt(10) + 1));
         }
+        //adds events
         int a = rand.nextInt(9) + 1;
         int b = rand.nextInt(8) + 1;
         if (b == a) {
@@ -95,10 +98,12 @@ public class Main extends ConsoleProgram {
         ArrayList<String> inv = new ArrayList<String>();
         inv.add("TP Scroll");
         inv.add("Health Potion");
+        //main game function
         while (!isOver) {
             String cmd = "";
             String ans = "";
             int correct = 0;
+            //gets user input, 'ans' is for the game
             if (!isAttacked) {
                 cmd = readLine("> ");
             } else {
@@ -110,14 +115,16 @@ public class Main extends ConsoleProgram {
                         "Help:\n - turn <right/left/around> (turns your character)\n - move (moves to the next room in the direction your facing)\n - search (searches the room your in)\n - stats (shows the stats of your character) \n - inventory (shows the items you can use) \n - use <item>");
                 // turn command
             } else if (cmd.contains("turn")) {
-
+//this should probably be abstracted but I cba to fix it
                 if (cmd.contains("right")) {
+                    //modify the stats of the char
                     if (stats[3] == 3) {
                         stats[3] = 0;
                     } else {
                         stats[3] = stats[3] + 1;
                     }
                     println("Turned right.");
+                    //print out the storyline
                     print(Colors.story);
                     String storyLine = (desc.get("rm " + stats[4]))[stats[3]];
                     for (int i = 0; i < storyLine.length(); i++) {
@@ -126,12 +133,14 @@ public class Main extends ConsoleProgram {
                     }
                     println("");
                 } else if (cmd.contains("left")) {
+                    //mod stats
                     if (stats[3] == 0) {
                         stats[3] = 3;
                     } else {
                         stats[3] = stats[3] - 1;
                     }
                     println("Turned left.");
+                    //print story
                     print(Colors.story);
                     String storyLine = (desc.get("rm " + stats[4]))[stats[3]];
                     for (int i = 0; i < storyLine.length(); i++) {
@@ -140,6 +149,7 @@ public class Main extends ConsoleProgram {
                     }
                     println("");
                 } else if (cmd.contains("around")) {
+                    //mod stats
                     stats[3] = stats[3] + 2;
                     if (stats[3] == 4) {
                         stats[3] = 0;
@@ -147,6 +157,7 @@ public class Main extends ConsoleProgram {
                         stats[3] = 1;
                     }
                     println("Turned around.");
+                    //print story
                     print(Colors.story);
                     String storyLine = (desc.get("rm " + stats[4]))[stats[3]];
                     for (int i = 0; i < storyLine.length(); i++) {
@@ -159,10 +170,12 @@ public class Main extends ConsoleProgram {
                 }
                 // move command
             } else if (cmd.contains("move")) {
+                //mod stats
                 int enter = dirs.get("rm " + stats[4])[stats[3]];
                 if (enter == 0) {
                     println("I can't go that way!");
                 } else if (enter == 10) {
+                    //event for rm 10
                     exit[0] = true;
                     if (!exit[1]) {
                         println(Colors.story + "The door is locked... maybe theres a key somewhere you can use to unlock it?");
@@ -178,6 +191,7 @@ public class Main extends ConsoleProgram {
                     }
 
                 } else {
+                    //normal move event
                     stats[4] = enter;
                     enterRoom(stats, "You've entered a new room");
                     stats[1] = stats[1] + 1;
@@ -190,7 +204,7 @@ public class Main extends ConsoleProgram {
             } else if (cmd.contains("search") || isAttacked) {
                 int bal = coins.get("rm " + stats[4]);
                 if (stats[4] == 0 && bal != -1) {
-                    // starter room
+                    // starter/tutorial room room
                     println(Colors.story + "You find a " + Colors.blue + "[1x TP Scroll]" + Colors.norm + " and " + Colors.blue
                             + "[1x Health Potion]" + Colors.norm + ".");
                     wait(2000);
@@ -269,10 +283,12 @@ public class Main extends ConsoleProgram {
                     inv.add("Key");
                     coins.put("rm " + stats[4], -1);
                 } else if (bal == 12) {
+                    //game stage 1
                     smartPrint(Colors.story + "Welcome. Let's play a game, shall we? I'd advise against trying to escape...\n"
                             + Colors.hint + "Press `enter` or `return` to continue." + Colors.norm);
                     coins.put("rm " + stats[4], 13);
                     isAttacked = true;
+                    //game stage 2
                 } else if (bal == 13) {
                     if (ans.contains("move") || ans.contains("turn")) {
                         smartPrint(Colors.story + "Do you really think I'd let you get away with that...");
@@ -285,10 +301,12 @@ public class Main extends ConsoleProgram {
                         println(Colors.hint + "Press `enter` or `return` to continue." + Colors.norm);
                         coins.put("rm " + stats[4], 14);
                     }
+                    //game stage 3
                 } else if (bal == 14) {
                     println(Colors.story
                             + "First question: \nYou're in a race and you pass the person in second place. What place are you in now?");
                     coins.put("rm " + stats[4], 15);
+                    //game stage 4
                 } else if (bal == 15) {
                     if (ans.equalsIgnoreCase("2nd Place") || ans.equalsIgnoreCase("2nd") || ans.equalsIgnoreCase("2")
                             || ans.equalsIgnoreCase("Second place")) {
@@ -300,6 +318,7 @@ public class Main extends ConsoleProgram {
                     coins.put("rm " + stats[4], 16);
                     wait(2000);
                     println("Second question: What kind of ship has two mates but no captain?");
+                    //game stage 5
                 } else if (bal == 16) {
                     if (ans.equalsIgnoreCase("A relationship") || ans.equalsIgnoreCase("relationship")) {
                         println(Colors.story + "Correct!");
@@ -310,6 +329,7 @@ public class Main extends ConsoleProgram {
                     coins.put("rm " + stats[4], 17);
                     wait(2000);
                     println("Last question: How much wood could a woodchuck chuck if a woodchuck could chuck wood?");
+                    //game stage 6
                 } else if (bal == 17) {
                     if (ans.equalsIgnoreCase("A woodchuck would chuck as much wood as a woodchuck could chuck if a woodchuck could chuck wood") || ans.equalsIgnoreCase("A woodchuck would chuck as much wood as a woodchuck could chuck if a woodchuck could chuck wood.")) {
                         println(Colors.story + "Correct!");
@@ -332,6 +352,7 @@ public class Main extends ConsoleProgram {
                        isDead(stats);
                     }
                     print(Colors.norm);
+                    //normal occurance
                 } else {
                     println("You found " + coins.get("rm " + stats[4]) + " coins!");
                     stats[0] += coins.get("rm " + stats[4]);
@@ -344,6 +365,7 @@ public class Main extends ConsoleProgram {
                     inv.remove(toUse);
                     println("Used " + Colors.blue + "[1x " + toUse + "]" + Colors.norm + "!");
                     wait(1000);
+                    //use items
                     switch (toUse) {
                         case "TP Scroll":
                             stats[4] = 1;
@@ -368,6 +390,7 @@ public class Main extends ConsoleProgram {
                         case "Single-Use Pistol":
                             println(Colors.story + "This can't be used here!");
                             break;
+                            //apparently defult case is broken on older versions of java
                         /*
                          * case default:
                          * println(story + "You can't use this right now...");
@@ -392,14 +415,16 @@ public class Main extends ConsoleProgram {
     static void start() {
         //print("\u001B[40m\u001B[37m");
         //print("\033[H\033[2J");
+        //startup instructions
         System.out.flush();
+        println(Colors.hint + "Set console theme to dark for the best experiance" + Colors.norm);
         println(Colors.story
                 + "The last thing I can remember was going deadish. Now I'm revived, but where could I be? \nMaybe there's a hint in this dark room, "
                 + Colors.cyan + "I wonder if searching it would turn up any clues..." + Colors.norm + "\nType `help` for help.\n---");
     }
 
     static void enterRoom(int[] stats, String toPrint) { // array of the stats (coins/rooms explored), what message to
-        // send when you enter the room, and the number of the room
+        //send when you enter the room, and the number of the room
         // entered
         System.out.print("\033[H\033[2J");
         System.out.flush();
@@ -408,7 +433,7 @@ public class Main extends ConsoleProgram {
         println(stats(stats));
         wait(1000);
     }
-
+//PRINT out stats
     static String stats(int[] stats) {
         String healthVisual = "";
         switch (Math.round((float) stats[2] / 2)) {
@@ -434,7 +459,7 @@ public class Main extends ConsoleProgram {
         return ("---\nStats:\n - Coins: " + stats[0] + "\n - Rooms Explored: " + stats[1] + "\n - Health: "
                 + healthVisual + " (" + stats[2] + "/10)" + "\n - Direction: " + direction(stats[3]) + "\n---");
     }
-
+//print direction visual
     static String direction(int facing) {
         String visual = "";
         switch (facing) {
@@ -453,14 +478,14 @@ public class Main extends ConsoleProgram {
         }
         return (visual);
     }
-
+//wait for an amount of time
     static void wait(int time) {
         try {
             Thread.sleep(time);
         } catch (InterruptedException x) {
         }
     }
-
+//function to trigger end of game if you die
     static void isDead(int[] stats) {
         wait(5000);
         println(Colors.red + "GAME OVER. YOU DIED.");
@@ -470,7 +495,7 @@ public class Main extends ConsoleProgram {
         println((stats[0] * 2 + 5) / 2);
         isOver = true;
     }
-
+//print out text one by one
     static void smartPrint(String text) {
         for (int i = 0; i < text.length(); i++) {
             wait(4);

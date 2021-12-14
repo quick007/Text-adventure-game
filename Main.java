@@ -85,10 +85,10 @@ public class Main extends ConsoleProgram {
             coins.put("rm " + i, (rand.nextInt(10) + 1));
         }
         int a = rand.nextInt(9) + 1;
-        int b = 1;//rand.nextInt(8) + 1;
-        //if (b == a) {
-        //    b = b + 1;
-        //}
+        int b = rand.nextInt(8) + 1;
+        if (b == a) {
+            b = b + 1;
+        }
         coins.put("rm " + a, 11);
         coins.put("rm " + b, 12);
         // inventory

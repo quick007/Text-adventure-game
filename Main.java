@@ -143,10 +143,7 @@ public class Main extends ConsoleProgram {
                     //print story
                     print(Colors.story);
                     String storyLine = (desc.get("rm " + stats[4]))[stats[3]];
-                    for (int i = 0; i < storyLine.length(); i++) {
-                        wait(4);
-                        print(storyLine.charAt(i));
-                    }
+                    print(storyLine);
                     println("");
                 } else if (cmd.contains("around")) {
                     //mod stats
@@ -184,7 +181,7 @@ public class Main extends ConsoleProgram {
                                 + "You won! Congrats! \nThat means that my losing systems didn't take over every room randomly \n(I mean it could happen, like its not like I spent the time to actually code a failsafe against it)");
                         isOver = true;
                         wait(2000);
-                        print(Colors.story + "More fanfare you say? Sorry that above the budget for this game.");
+                        print(Colors.story + "More fanfare you say? Sorry that's above the budget for this game.");
                         println("Score: ");
                         wait(1000);
                         println((stats[0] * 2 + 5) / 2);
@@ -225,7 +222,7 @@ public class Main extends ConsoleProgram {
                     println("You've already searched this room!");
                 } else if (bal > 6 && bal < 11) {
                     // special occasion rooms
-                    int special = rand.nextInt(3);
+                    int special = rand.nextInt(4);
                     int extra = rand.nextInt(5) + 1;
                     switch (special) {
                         case 0:
@@ -331,7 +328,7 @@ public class Main extends ConsoleProgram {
                     println("Last question: How much wood could a woodchuck chuck if a woodchuck could chuck wood?");
                     //game stage 6
                 } else if (bal == 17) {
-                    if (ans.equalsIgnoreCase("A woodchuck would chuck as much wood as a woodchuck could chuck if a woodchuck could chuck wood") || ans.equalsIgnoreCase("A woodchuck would chuck as much wood as a woodchuck could chuck if a woodchuck could chuck wood.")) {
+                    if (ans.equalsIgnoreCase("A woodchuck would chuck as much wood as a woodchuck could chuck if a woodchuck could chuck wood") || ans.equalsIgnoreCase("a woodchuck would chuck how much wood a woodchuck would chuck if a woodchuck could chuck wood") || ans.equalsIgnoreCase("A woodchuck would chuck as much wood as a woodchuck could chuck if a woodchuck could chuck wood.")) {
                         println(Colors.story + "Correct!");
                         correct += 1;
                     } else {
@@ -360,45 +357,51 @@ public class Main extends ConsoleProgram {
                 }
                 // use command
             } else if (cmd.contains("use")) {
-                String toUse = cmd.split(" ", 2)[1];
-                if (inv.contains(toUse)) {
-                    inv.remove(toUse);
-                    println("Used " + Colors.blue + "[1x " + toUse + "]" + Colors.norm + "!");
-                    wait(1000);
-                    //use items
-                    switch (toUse) {
-                        case "TP Scroll":
-                            stats[4] = 1;
-                            enterRoom(stats, "The scroll teleports you to room one!");
-                            break;
-                        case "Health Potion":
-                            println(Colors.red + "[+5 ❤ ]" + Colors.norm);
-                            stats[2] = stats[2] + 5;
-                            if (stats[2] > 10) {
-                                stats[2] = 10;
-                            }
-                            break;
-                        case "Key":
-                            if (exit[0]) {
-                                exit[1] = true;
-                                println(Colors.story + "Opened the door!");
-                            } else {
-                                println(Colors.story + "You can't use this right now...");
-                            }
-                            break;
-                        case "Single-Use Shield":
-                        case "Single-Use Pistol":
-                            println(Colors.story + "This can't be used here!");
-                            break;
+                try {
+                    String toUse = cmd.split(" ", 2)[1];
+                    if (inv.contains(toUse)) {
+                        inv.remove(toUse);
+                        println("Used " + Colors.blue + "[1x " + toUse + "]" + Colors.norm + "!");
+                        wait(1000);
+                        //use items
+                        switch (toUse) {
+                            case "TP Scroll":
+                                stats[4] = 1;
+                                enterRoom(stats, "The scroll teleports you to room one!");
+                                break;
+                            case "Health Potion":
+                                println(Colors.red + "[+5 ❤ ]" + Colors.norm);
+                                stats[2] = stats[2] + 5;
+                                if (stats[2] > 10) {
+                                    stats[2] = 10;
+                                }
+                                break;
+                            case "Key":
+                                if (exit[0]) {
+                                    exit[1] = true;
+                                    println(Colors.story + "Opened the door!");
+                                } else {
+                                    println(Colors.story + "You can't use this right now...");
+                                }
+                                break;
+                            case "Single-Use Shield":
+                            case "Single-Use Pistol":
+                                println(Colors.story + "This can't be used here!");
+                                break;
                             //apparently defult case is broken on older versions of java
-                        /*
-                         * case default:
-                         * println(story + "You can't use this right now...");
-                         * break;
-                         */
+                            /*
+                             * case default:
+                             * println(story + "You can't use this right now...");
+                             * break;
+                             */
+                        }
+                    } else {
+                        println("I can't find " + Colors.blue + "[" + toUse + "]" + Colors.norm + "! \nCheck your capitalization!");
                     }
-                } else {
-                    println("I can't find " + Colors.blue + "[" + toUse + "]" + Colors.norm + "! \nCheck your capitalization!");
+                } catch(Exception x) {
+
+                    println("You need to specify and item to use!");
+
                 }
                 // inventory command
             } else if (cmd.contains("inv") || cmd.contains("inventory")) {
@@ -417,7 +420,7 @@ public class Main extends ConsoleProgram {
         //print("\033[H\033[2J");
         //startup instructions
         System.out.flush();
-        println(Colors.hint + "Set console theme to dark for the best experiance" + Colors.norm);
+        println(Colors.hint + "Set console theme to dark for the best experience" + Colors.norm);
         println(Colors.story
                 + "The last thing I can remember was going deadish. Now I'm revived, but where could I be? \nMaybe there's a hint in this dark room, "
                 + Colors.cyan + "I wonder if searching it would turn up any clues..." + Colors.norm + "\nType `help` for help.\n---");
@@ -461,21 +464,13 @@ public class Main extends ConsoleProgram {
     }
 //print direction visual
     static String direction(int facing) {
-        String visual = "";
-        switch (facing) {
-            case 0:
-                visual = "↑ (North)";
-                break;
-            case 1:
-                visual = "→ (East)";
-                break;
-            case 2:
-                visual = "↓ (South)";
-                break;
-            case 3:
-                visual = "← (West)";
-                break;
-        }
+        String visual = switch (facing) {
+            case 0 -> "↑ (North)";
+            case 1 -> "→ (East)";
+            case 2 -> "↓ (South)";
+            case 3 -> "← (West)";
+            default -> "";
+        };
         return (visual);
     }
 //wait for an amount of time
@@ -497,10 +492,12 @@ public class Main extends ConsoleProgram {
     }
 //print out text one by one
     static void smartPrint(String text) {
-        for (int i = 0; i < text.length(); i++) {
-            wait(4);
-            print(text.charAt(i));
-        }
+        // intelij makes this look wierd
+//        for (int i = 0; i < text.length(); i++) {
+//            wait(4);
+//            print(text.charAt(i));
+//        }
+        print(text);
         print("\n");
     }
 
